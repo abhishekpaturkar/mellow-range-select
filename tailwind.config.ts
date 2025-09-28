@@ -57,6 +57,15 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        calendar: {
+          selected: "hsl(var(--calendar-selected))",
+          "selected-foreground": "hsl(var(--calendar-selected-foreground))",
+          range: "hsl(var(--calendar-range))",
+          "range-foreground": "hsl(var(--calendar-range-foreground))",
+          hover: "hsl(var(--calendar-hover))",
+          today: "hsl(var(--calendar-today))",
+          "today-foreground": "hsl(var(--calendar-today-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
