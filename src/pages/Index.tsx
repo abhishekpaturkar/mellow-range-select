@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { DateRangeSelector } from '@/components/DateRangeSelector';
+import React, { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
+import '../components/DateRangeSelector.css';
+
+// Declare global interface for DateRangeSelector
+declare global {
+  interface Window {
+    DateRangeSelector: any;
+  }
+}
 
 interface DateRange {
   from?: Date;
@@ -9,18 +16,54 @@ interface DateRange {
 
 const Index = () => {
   const [selectedRange, setSelectedRange] = useState<DateRange>({});
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const dateRangeSelectorRef = useRef<any>(null);
 
-  const handleRangeChange = (range: DateRange) => {
-    setSelectedRange(range);
-  };
+  useEffect(() => {
+    // Load the DateRangeSelector JavaScript using script tag
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    
+    // Load script content directly
+    fetch('/src/components/DateRangeSelector.js')
+      .then(response => response.text())
+      .then(scriptContent => {
+        // Execute the script
+        const scriptElement = document.createElement('script');
+        scriptElement.textContent = scriptContent;
+        document.head.appendChild(scriptElement);
+        
+        // Initialize after script loads
+        if (calendarRef.current && (window as any).DateRangeSelector) {
+          dateRangeSelectorRef.current = new (window as any).DateRangeSelector(calendarRef.current, {
+            value: selectedRange,
+            onValueChange: (range: DateRange) => {
+              setSelectedRange(range);
+            },
+            onApply: (range: DateRange) => {
+              console.log('Applied date range:', range);
+            },
+            onClear: () => {
+              console.log('Cleared date range');
+            }
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Failed to load DateRangeSelector:', error);
+        // Fallback - create a simple placeholder
+        if (calendarRef.current) {
+          calendarRef.current.innerHTML = '<div style="padding: 20px; text-align: center; border: 1px solid #ccc; border-radius: 8px;">Loading calendar...</div>';
+        }
+      });
+  }, []);
 
-  const handleApply = (range: DateRange) => {
-    console.log('Applied date range:', range);
-  };
-
-  const handleClear = () => {
-    console.log('Cleared date range');
-  };
+  useEffect(() => {
+    if (dateRangeSelectorRef.current) {
+      dateRangeSelectorRef.current.setValue(selectedRange);
+    }
+  }, [selectedRange]);
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -37,12 +80,7 @@ const Index = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Calendar Component */}
           <div className="flex justify-center">
-            <DateRangeSelector
-              value={selectedRange}
-              onValueChange={handleRangeChange}
-              onApply={handleApply}
-              onClear={handleClear}
-            />
+            <div ref={calendarRef}></div>
           </div>
 
           {/* Selected Range Display */}
