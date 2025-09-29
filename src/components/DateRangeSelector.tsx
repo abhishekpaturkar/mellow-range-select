@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Dropdown, Button, Icon } from 'semantic-ui-react';
 import './DateRangeSelector.css';
 
 interface DateRange {
@@ -230,31 +229,40 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
         </div>
         
         <div className="month-navigation">
-          <Button 
-            icon 
-            className="nav-button" 
-            onClick={() => this.navigateMonth('prev')}
-          >
-            <Icon name="chevron left" />
-          </Button>
+          <button className="nav-button" onClick={() => this.navigateMonth('prev')}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
           
           <div className="month-year-display">
             <span className="month-name">{this.MONTHS[currentDate.getMonth()]}</span>
-            <Dropdown
-              inline
-              options={yearOptions}
-              value={currentDate.getFullYear()}
-              onChange={(e, { value }) => this.selectYear(value as number)}
-            />
+            <div className="year-dropdown">
+              <button className="year-button" onClick={this.toggleYearDropdown}>
+                <span>{currentDate.getFullYear()}</span>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div className={`year-dropdown-menu ${isYearDropdownOpen ? '' : 'hidden'}`}>
+                {yearOptions.map(option => (
+                  <div
+                    key={option.key}
+                    className={`year-option ${option.value === currentDate.getFullYear() ? 'selected' : ''}`}
+                    onClick={() => this.selectYear(option.value)}
+                  >
+                    {option.text}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
           
-          <Button 
-            icon 
-            className="nav-button" 
-            onClick={() => this.navigateMonth('next')}
-          >
-            <Icon name="chevron right" />
-          </Button>
+          <button className="nav-button" onClick={() => this.navigateMonth('next')}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
         </div>
         
         <div className="calendar-days-header">
@@ -268,19 +276,12 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
         </div>
         
         <div className="action-buttons">
-          <Button 
-            className="action-button clear-button" 
-            onClick={this.handleClear}
-          >
+          <button className="action-button clear-button" onClick={this.handleClear}>
             Clear
-          </Button>
-          <Button 
-            primary 
-            className="action-button apply-button" 
-            onClick={this.handleApply}
-          >
+          </button>
+          <button className="action-button apply-button" onClick={this.handleApply}>
             Apply
-          </Button>
+          </button>
         </div>
       </div>
     );
