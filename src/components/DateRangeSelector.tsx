@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './DateRangeSelector.css';
+import { toast } from "@/hooks/use-toast";
 
 interface DateRange {
   from?: Date;
@@ -94,7 +95,14 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
     today.setHours(23, 59, 59, 999); // Set to end of today
     
     // Prevent selection of future dates
-    if (date > today) return;
+    if (date > today) {
+      toast({
+        title: "Invalid Date Selection",
+        description: "End date should be smaller than today. Please select a date from the past.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     this.setState(prevState => {
       let newTempRange: DateRange;
