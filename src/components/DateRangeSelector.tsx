@@ -90,6 +90,12 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
   };
 
   handleDateClick = (date: Date) => {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Set to end of today
+    
+    // Prevent selection of future dates
+    if (date > today) return;
+    
     this.setState(prevState => {
       let newTempRange: DateRange;
       
@@ -177,9 +183,9 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
   };
 
   generateYearOptions = () => {
-    const currentYear = this.state.currentDate.getFullYear();
-    const startYear = currentYear - 50;
-    const endYear = currentYear + 10;
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 10;
+    const endYear = currentYear;
     
     const years = [];
     for (let year = startYear; year <= endYear; year++) {
@@ -189,7 +195,7 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
         value: year
       });
     }
-    return years;
+    return years.reverse(); // Show most recent years first
   };
 
   renderCalendarDay = (date: Date): JSX.Element => {
@@ -199,18 +205,24 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
     const isRangeEnd = this.isDateRangeEnd(date);
     const isToday = this.isSameDay(date, new Date());
     
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const isFutureDate = date > today;
+    
     let classes = ['calendar-day'];
     if (!isCurrentMonth) classes.push('other-month');
     if (isToday && !isInRange) classes.push('today');
     if (isInRange && !isRangeStart && !isRangeEnd) classes.push('in-range');
     if (isRangeStart) classes.push('range-start');
     if (isRangeEnd) classes.push('range-end');
+    if (isFutureDate) classes.push('disabled');
     
     return (
       <button
         key={date.toISOString()}
         className={classes.join(' ')}
         onClick={() => this.handleDateClick(date)}
+        disabled={isFutureDate}
       >
         {date.getDate()}
       </button>
