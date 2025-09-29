@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Dropdown, Button, Icon } from 'semantic-ui-react';
 import './DateRangeSelector.css';
 
 interface DateRange {
@@ -176,14 +177,18 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
     return allDays;
   };
 
-  generateYearOptions = (): number[] => {
+  generateYearOptions = () => {
     const currentYear = this.state.currentDate.getFullYear();
     const startYear = currentYear - 50;
     const endYear = currentYear + 10;
     
-    const years: number[] = [];
+    const years = [];
     for (let year = startYear; year <= endYear; year++) {
-      years.push(year);
+      years.push({
+        key: year,
+        text: year.toString(),
+        value: year
+      });
     }
     return years;
   };
@@ -225,40 +230,31 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
         </div>
         
         <div className="month-navigation">
-          <button className="nav-button" onClick={() => this.navigateMonth('prev')}>
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-          </button>
+          <Button 
+            icon 
+            className="nav-button" 
+            onClick={() => this.navigateMonth('prev')}
+          >
+            <Icon name="chevron left" />
+          </Button>
           
           <div className="month-year-display">
             <span className="month-name">{this.MONTHS[currentDate.getMonth()]}</span>
-            <div className="year-dropdown">
-              <button className="year-button" onClick={this.toggleYearDropdown}>
-                <span>{currentDate.getFullYear()}</span>
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </button>
-              <div className={`year-dropdown-menu ${isYearDropdownOpen ? '' : 'hidden'}`}>
-                {yearOptions.map(year => (
-                  <div
-                    key={year}
-                    className={`year-option ${year === currentDate.getFullYear() ? 'selected' : ''}`}
-                    onClick={() => this.selectYear(year)}
-                  >
-                    {year}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <Dropdown
+              inline
+              options={yearOptions}
+              value={currentDate.getFullYear()}
+              onChange={(e, { value }) => this.selectYear(value as number)}
+            />
           </div>
           
-          <button className="nav-button" onClick={() => this.navigateMonth('next')}>
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </button>
+          <Button 
+            icon 
+            className="nav-button" 
+            onClick={() => this.navigateMonth('next')}
+          >
+            <Icon name="chevron right" />
+          </Button>
         </div>
         
         <div className="calendar-days-header">
@@ -272,12 +268,19 @@ class DateRangeSelector extends Component<DateRangeSelectorProps, DateRangeSelec
         </div>
         
         <div className="action-buttons">
-          <button className="action-button clear-button" onClick={this.handleClear}>
+          <Button 
+            className="action-button clear-button" 
+            onClick={this.handleClear}
+          >
             Clear
-          </button>
-          <button className="action-button apply-button" onClick={this.handleApply}>
+          </Button>
+          <Button 
+            primary 
+            className="action-button apply-button" 
+            onClick={this.handleApply}
+          >
             Apply
-          </button>
+          </Button>
         </div>
       </div>
     );
